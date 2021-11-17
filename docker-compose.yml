@@ -1,0 +1,78 @@
+version: 1
+
+services:
+
+  postgres:
+    build:
+      context: ./Docker/postgres/
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    ports:
+      - "5432:5432"
+    restart: always 
+
+  # redis:
+  #   image: redis
+  #   expose:
+  #     - "6379"
+  #   restart: always
+  #   depends_on:
+  #     - postgres
+
+  # celery:
+  #   build:
+  #     context: ./Docker/bot/
+  #     dockerfile: Dockerfile
+  #   command: celery -A bot worker -l INFO
+  #   env_file:
+  #     - ./Docker/bot/.env
+  #   volumes:
+  #     - ./Docker/bot/:/var/www/bot/
+  #   restart: always
+  #   links:
+  #     - redis
+  #   depends_on:
+  #     - postgres
+  #     - redis
+
+  trading_bot:
+    build:
+      context: ./Docker/trading_bot/
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    expose:
+      - "8000"
+    volumes:
+      - ./Docker/trading_bot/:/var/www/trading_bot/
+    links:
+      # - redis
+      - postgres
+    depends_on:
+      - postgres
+      # - redis
+      # - celery
+    restart: always
+
+  nginx:
+    build:
+      context: ./Docker/nginx
+      dockerfile: Dockerfile
+    volumes:
+      - ./Docker/nginx/nginx.conf:/etc/nginx/conf.d/nginx.conf
+      # - ./Docker/trading_bot/static/:/static/
+      # - ./Docker/trading_bot/media/:/media/
+    ports:
+      - "80:80"
+    restart: always
+    links:
+      - postgres
+      # - redis
+      # - celery
+      - trading_bot
+    depends_on:
+      - postgres
+      # - redis
+      # - celery
+      - trading_bot
