@@ -3,21 +3,37 @@ from aiogram.dispatcher.filters import CommandStart, CommandHelp, Text
 
 from .help import bot_help
 from .start import bot_start
-from .base import go_back
-from .payment import payment_course, payment_subscription, choose_payment, payment_confirm, payment_finish
-# from filters.base import BackFilter
-# from filters.payments import BuyCourseFilter
-from states.user.payment import PaymentStates
+from .base import BaseHandler
+from .signals import SignalsHandler
+from states.user.signals import SignalsStates, AboutStates
+from .education import EducationHandler
+from states.user.education import EducationStates, EducationAboutStates
+from .feedback import FeedbackHandler
+from .question import QuestionHandler
+from states.user.question import QuestionStates
 
 
 def setup(dp: Dispatcher):
     dp.register_message_handler(bot_start, CommandStart())
     dp.register_message_handler(bot_help, CommandHelp())
 
-    dp.register_message_handler(go_back, Text("Назад"), state="*")
-    dp.register_message_handler(payment_course, Text("Купить курс"), state=None)
-    dp.register_message_handler(payment_subscription, Text("Купить подписку"), state=None)
-    dp.register_message_handler(payment_confirm, Text(equals=["Ю-Pay", "Telegram"]), state=PaymentStates.PaymentInitialized)
-    dp.register_message_handler(choose_payment, state=PaymentStates.PaymentInitialized)
-    dp.register_message_handler(payment_confirm, state=PaymentStates.PaymentChosen)
-    dp.register_message_handler(payment_finish, state=PaymentStates.PaymentConfirmed)
+    dp.register_message_handler(BaseHandler().go_home, Text("На главную"), state="*")
+
+    dp.register_message_handler(SignalsHandler().go_back, Text("Назад"), state=[AboutStates.AboutState, *SignalsStates.all_states])
+    dp.register_message_handler(SignalsHandler().default, Text("Сигналы"), state=None)
+    dp.register_message_handler(SignalsHandler().about, Text("О платной группе"), state=SignalsStates.SignalsDefaultState)
+    dp.register_message_handler(SignalsHandler().subscription_rates, Text("Приобрести подписку"), state=[AboutStates.AboutState, SignalsStates.SignalsDefaultState])
+    dp.register_message_handler(SignalsHandler().payment_system, state=SignalsStates.RatesState)
+    dp.register_message_handler(SignalsHandler().payment_process, state=SignalsStates.PaymentSystemState)
+    
+    dp.register_message_handler(EducationHandler().go_back, Text("Назад"), state=[EducationAboutStates.AboutState, *EducationStates.all_states])
+    dp.register_message_handler(EducationHandler().default, Text("Обучение"), state=None)
+    dp.register_message_handler(EducationHandler().about, Text("Про обучение"), state=EducationStates.EducationDefaultState)
+    dp.register_message_handler(EducationHandler().payment_system, Text("Приобрести обучение"), state=[EducationAboutStates.AboutState, EducationStates.EducationDefaultState])
+    dp.register_message_handler(EducationHandler().payment_process, state=EducationStates.EducationPaymentState)
+
+    dp.register_message_handler(FeedbackHandler().default, Text("Отзывы"), state=None)
+    
+    dp.register_message_handler(QuestionHandler().default, Text("Задать вопрос"), state=None)
+    dp.register_message_handler(QuestionHandler().bot_question, Text("Спросить в боте"), state=QuestionStates.QuestionDefaultState)
+    dp.register_message_handler(QuestionHandler().post_question, state=QuestionStates.QuestionPostState)

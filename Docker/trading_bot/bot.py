@@ -49,6 +49,11 @@ async def init() -> web.Application:
     return app
 
 
+async def on_startup_temp(dp: Dispatcher):
+    await handlers.user.start.send_to_admin(dp, text="Сервер запущен")
+    # await handlers.user.start.bot_start()
+
+
 if __name__ == '__main__':
     bot = Bot(config.BOT_TOKEN, parse_mode=ParseMode.HTML, validate_token=True)
     storage = RedisStorage2(**config.redis)
@@ -56,7 +61,11 @@ if __name__ == '__main__':
 
     # web.run_app(init())
 
+    from utils.misc import logging
+    logging.setup()
+    logger.info('Configure Webhook URL to: {url}', url=config.WEBHOOK_URL)
+
     storage = MemoryStorage()
     dp = Dispatcher(bot, storage=storage)
     handlers.user.setup(dp)
-    executor.start_polling(dp, on_startup=lambda dp: handlers.user.start.send_to_admin(dp, text="Сервер запущен"))
+    executor.start_polling(dp, on_startup=on_startup_temp)
