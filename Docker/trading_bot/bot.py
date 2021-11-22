@@ -68,4 +68,5 @@ if __name__ == '__main__':
     storage = MemoryStorage()
     dp = Dispatcher(bot, storage=storage)
     handlers.user.setup(dp)
+    handlers.admin.setup(dp)
     executor.start_polling(dp, on_startup=on_startup_temp)

@@ -1,6 +1,6 @@
 from aiogram.dispatcher.filters.state import StatesGroup, State
 
-from .default import DefaultStates
+from states.default import DefaultStates
 
 
 class SignalsStates(DefaultStates):

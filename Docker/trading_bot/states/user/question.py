@@ -1,6 +1,6 @@
 from aiogram.dispatcher.filters.state import State
 
-from .default import DefaultStates
+from states.default import DefaultStates
 
 
 class QuestionStates(DefaultStates):
