@@ -6,7 +6,8 @@ class AdminDefaultKb(HomeKb):
         super().__init__(
             actions = [
                 'Дать сигнал',
+                'Ответить на вопрос'
             ],
-            schema = [1],
+            schema = [2],
             *args, **kwargs
         )

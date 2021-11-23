@@ -1,10 +1,21 @@
+from aiogram.dispatcher import Dispatcher
+from sqlalchemy.sql.expression import insert, select
+
+from utils.db.postgres.db import Subscription
+
 from .base import PaymentSystemABC
+from utils.db.postgres.db import PaymentSystem, Invoice
+from utils.db.postgres.utils import db_max_id
+from utils.payment.config import subscription_rates_aliases, payment_types
 
 
 class CardSystem(PaymentSystemABC):
-    async def process(self, data):
+    slug = "card"
 
-        return f"Переведите сумму на банковские реквизиты ниже, чтобы совершить оплату стоимостью {data['amount']} руб.\n+79110185385"
+    async def process(self, data):
+        with await Dispatcher.get_current().data["db"] as conn:
+            message = (await (await conn.execute(select(PaymentSystem).where(PaymentSystem.slug == self.slug))).fetchone())["message"]
+            return message.format(amount=data["amount"])
 
     async def callback(self):
         

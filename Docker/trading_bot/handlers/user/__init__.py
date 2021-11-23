@@ -35,5 +35,6 @@ def setup(dp: Dispatcher):
     dp.register_message_handler(FeedbackHandler().default, Text("Отзывы"), state=None)
     
     dp.register_message_handler(QuestionHandler().default, Text("Задать вопрос"), state=None)
+    dp.register_message_handler(QuestionHandler().ls_question, Text("Спросить лично"), state=QuestionStates.QuestionDefaultState)
     dp.register_message_handler(QuestionHandler().bot_question, Text("Спросить в боте"), state=QuestionStates.QuestionDefaultState)
     dp.register_message_handler(QuestionHandler().post_question, state=QuestionStates.QuestionPostState)

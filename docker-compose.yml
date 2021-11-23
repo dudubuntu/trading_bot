@@ -25,22 +25,22 @@ services:
     volumes:
       - ./Docker/admin_proj/:/var/www/app/
 
-  # trading_bot:
-  #   build:
-  #     context: ./Docker/trading_bot/
-  #     dockerfile: Dockerfile
-  #   env_file:
-  #     - .env
-  #   expose:
-  #     - "8000"
-  #   volumes:
-  #     - ./Docker/trading_bot/:/var/www/trading_bot/
-  #   links:
-  #     - postgres
-  #   depends_on:
-  #     - postgres
-  #     - admin_proj
-  #   restart: always
+  trading_bot:
+    build:
+      context: ./Docker/trading_bot/
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    expose:
+      - "8000"
+    volumes:
+      - ./Docker/trading_bot/:/var/www/trading_bot/
+    links:
+      - postgres
+    depends_on:
+      - postgres
+      - admin_proj
+    restart: always
 
   nginx:
     build:

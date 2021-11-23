@@ -14,3 +14,9 @@ class AdminSignalStates(AdminStates):
     parent = AdminStates
 
     SignalDefaultState = State()
+
+
+class AdminAnswerStates(AdminStates):
+    parent = AdminStates
+
+    AnswerDefaultState = State()
