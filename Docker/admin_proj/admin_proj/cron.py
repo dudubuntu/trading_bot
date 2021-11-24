@@ -22,5 +22,5 @@ class CheckSubscriptions(CronJobBase):
     code = 'cron_updater_subscriptions'    # a unique code
 
     def do(self):
-        result = Subscription.objects.update(is_active=False).where(created__gte=timezone.now() - timedelta(weeks=4 * F("rate")))
+        result = Subscription.objects.filter(created__lte=timezone.now() - (timezone.timedelta(weeks=4) * F("rate"))).update(is_active=False)
         print(result)

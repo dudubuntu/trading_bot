@@ -25,10 +25,13 @@ async def on_startup(app: web.Application):
     handlers.user.setup(dp)
     logger.info('Configure Webhook URL to: {url}', url=config.WEBHOOK_URL)
     await dp.bot.set_webhook(config.WEBHOOK_URL)
+    await handlers.user.start.send_to_admin(dp, text="Сервер запущен")
+    await db_helpers.init_pg(dp, config)
 
 
 async def on_shutdown(app: web.Application):
     app_bot: Bot = app['bot']
+    await db_helpers.close_pg(dp)
     await app_bot.close()
 
 
@@ -54,22 +57,18 @@ async def init() -> web.Application:
 async def on_startup_temp(dp: Dispatcher):
     await handlers.user.start.send_to_admin(dp, text="Сервер запущен")
     await db_helpers.init_pg(dp, config)
-    # await handlers.user.start.bot_start()
 
 async def on_shutdown_temp(dp: Dispatcher):
     await db_helpers.close_pg(dp)
 
 
 if __name__ == '__main__':
+    # from utils.misc import logging
+    # logging.setup()
+    # logger.info('Configure Webhook URL to: {url}', url=config.WEBHOOK_URL)
+
     bot = Bot(config.BOT_TOKEN, parse_mode=ParseMode.HTML, validate_token=True)
     storage = RedisStorage2(**config.redis)
-    # dp = Dispatcher(bot, storage=storage)
-
-    # web.run_app(init())
-
-    from utils.misc import logging
-    logging.setup()
-    logger.info('Configure Webhook URL to: {url}', url=config.WEBHOOK_URL)
 
     storage = MemoryStorage()
     dp = Dispatcher(bot, storage=storage)
@@ -77,27 +76,5 @@ if __name__ == '__main__':
     handlers.admin.setup(dp)
     executor.start_polling(dp, on_startup=on_startup_temp, on_shutdown=on_shutdown_temp)
 
-    # bot = Bot(config.BOT_TOKEN, parse_mode=ParseMode.HTML, validate_token=True)
-    # storage = RedisStorage2(**config.redis)
-    # dp = Dispatcher(bot, storage=storage)
-
-    # async def main():
-
-    #     while True:
-    #         db = await db_helpers.init_pg(dp, config)
-
-    #         with await db as conn:
-    #             print('Done')
-    #         conn = await db.acquire()
-    #         from sqlalchemy import select, insert, values, delete, update
-    #         from utils.db.postgres.db import TgUser
-    #         result = await conn.execute(insert(TgUser, [{"chat_id": 1, "username": "test"}]))
-    #         print(result)
-    #         result = await(await conn.execute(select(TgUser))).fetchall()
-    #         print(result)
-    #         await asyncio.sleep(10)
-    #         conn.close()
-    #         db.close()
-
-    # loop = asyncio.get_event_loop()
-    # loop.run_until_complete(main())
+    # TODO Поднять на application
+    # web.run_app(init())
