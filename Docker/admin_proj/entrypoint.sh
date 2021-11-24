@@ -2,7 +2,7 @@
 
 sleep 3
 
-if [ $MAKE_MIGRATIONS ]
+if [[ $MAKE_MIGRATIONS == "True" ]]
     then
         python manage.py makemigrations --no-input
 
@@ -15,10 +15,14 @@ if [ $MAKE_MIGRATIONS ]
         python manage.py createsuperuser --no-input
 fi
 
-if [ $COLLECT_STATIC ]
+if [[ $COLLECT_STATIC == "True" ]]
     then
         python manage.py collectstatic --no-input
 fi
 
-exec gunicorn admin_proj.wsgi:application -b 0.0.0.0:8000 --reload
 # python manage.py runserver
+python manage.py runcrons --force
+
+python manage.py runcrons
+
+exec gunicorn admin_proj.wsgi:application -b 0.0.0.0:8000 --reload

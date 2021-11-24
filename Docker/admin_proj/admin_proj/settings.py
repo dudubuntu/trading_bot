@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_cron',
     'admin_proj'
 ]
 
@@ -142,3 +143,10 @@ MEDIA_ROOT = PROJECT_ROOT / 'media'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+# Other settings
+
+CRON_CLASSES = [
+    "admin_proj.cron.CheckSubscriptions",
+]

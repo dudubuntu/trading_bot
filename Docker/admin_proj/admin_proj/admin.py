@@ -59,13 +59,14 @@ class TgUserAdmin(admin.ModelAdmin):
 class InvoiceAdmin(admin.ModelAdmin):
     # actions = []
     # actions_on_top = True
-    fieldsets = (
-        (None, {"fields": ["id", "user"]}),
-        (None, {"fields": ["type", "rate"],
-                   "classes": ["collapse"]}),
-        (None, {"fields": ["is_payed", ["created_at", "updated_at"]],
-                   "classes": ["collapse"]}),
-    )
+    # fieldsets = (
+    #     (None, {"fields": ("id", "user")}),
+    #     (None, {"fields": ("type", "rate"),
+    #                "classes": ("collapse", )}),
+    #     (None, {"fields": ("is_payed", ("created_at", "updated_at")),
+    #                "classes": ("collapse", )}),
+    # )
+    fields = ["id", "user", "username", "type", "rate", "payment_system", "subscription", "is_payed", "created_at", "updated_at"]
     readonly_fields = ['created_at']
     list_display = ["id", "user", "username", "has_active_subscription"]
     readonly_fields = ["id", "user", "username", "created_at"]
@@ -81,6 +82,13 @@ class InvoiceAdmin(admin.ModelAdmin):
         return obj.user.username
 
 
+@admin.register(Subscription)
+class SubscriptionAdmin(admin.ModelAdmin):
+    fields = ["user", "rate", "created", "is_active"]
+    readonly_fields = ["created"]
+    list_display = ["user", "rate", "is_active"]
+
+
+# admin.site.register(Invoice)
 admin.site.register(Rate)
-admin.site.register(Subscription)
 admin.site.register(PaymentSystem)

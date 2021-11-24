@@ -63,13 +63,12 @@ class PaymentSystem(models.Model):
 
 
 class Invoice(models.Model):
-    type_list = (
-        (1, "Подписка"),
-        (2, "Обучение")
-    )
+    class TypeList(models.IntegerChoices):
+        subscription = 1, "Подписка"
+        education = 2, "Обучение"
 
     user = models.ForeignKey(TgUser, on_delete=models.DO_NOTHING, to_field="chat_id", related_name='invoice_list')
-    type = models.PositiveSmallIntegerField("Тип оплаты", choices=type_list)
+    type = models.PositiveSmallIntegerField("Тип оплаты", choices=TypeList.choices)
     rate = models.ForeignKey(Rate, on_delete=models.DO_NOTHING, to_field="month", null=True)
     payment_system = models.ForeignKey(PaymentSystem, on_delete=models.DO_NOTHING, to_field='slug')
     subscription = models.ForeignKey(Subscription, on_delete=models.DO_NOTHING, null=True, related_name="invoice_list")
